@@ -1,17 +1,25 @@
-window.onload = function(){
-  var winning_state = start();
-  var puzzle_pieces = getpieces();
+//Global Vaiable declarations
+var blank = ["300px", "300px"]; //coordinates for blank position
 
+
+
+window.onload = function(){
+  var winning_state = start(), puzzle_pieces = getpieces();
   for (var i = 0; i < puzzle_pieces.length; i++) {
         puzzle_pieces[i].addEventListener("mouseover", function() {
             if (ismovable(this)) {
                 this.className = "puzzlepiece movablepiece";
             }
         });
+
+
+      puzzle_pieces[i].addEventListener("click", function() {
+            if (this.className.includes("movablepiece")) {
+                swap(this, true, winning_state, puzzle_pieces);
+            }
+        });
       }
 }
-//Global Vaiable declarations
-var blank = ["300px", "300px"]; //coordinates for blank position
 
 function getpieces() {
     return $(".puzzlepiece");
@@ -20,12 +28,7 @@ function getpieces() {
 function start() {
     var puzzleArea = document.getElementById("puzzlearea").childNodes;
     var instate = [];
-
-    var x = 0,
-        y = 0,
-        t = 0,
-        l = 0,
-        counter = 1;
+    var x = 0,y = 0,t = 0,l = 0,counter = 1;
 
     for (let k = 0; k < puzzleArea.length; k++) {
         if (puzzleArea[k].nodeName == "DIV") {
@@ -51,4 +54,21 @@ function start() {
 
 function ismovable(piece) {
     return parseInt(piece.style.top) + 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) - 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) - 100 === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) + 100 === parseInt(blank[1])
+}
+
+
+function swap(piece, animate) {
+    btop = piece.style.top;
+    bleft = piece.style.left;
+
+    if (animate) {
+        var winning_state = arguments[2];
+        var pieces = arguments[3];
+        $(piece).animate({ "top": blank[0], "left": blank[1] }, "slow", "linear");
+
+    } else {
+        piece.style.top = blank[0];
+        piece.style.left = blank[1];
+    }
+    blank = [btop,bleft];
 }
