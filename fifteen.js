@@ -4,18 +4,26 @@ var blank = ["300px", "300px"]; //coordinates for blank position
 
 
 window.onload = function(){
-  var winning_state = start(), puzzle_pieces = getpieces();
-  for (var i = 0; i < puzzle_pieces.length; i++) {
-        puzzle_pieces[i].addEventListener("mouseover", function() {
+  var winning_state = start(), puzzle = getpieces();
+
+document.getElementById("shufflebutton").onclick = function() {
+  shuffle(puzzle);
+}
+
+  for (var i = 0; i < puzzle.length; i++) {
+        puzzle[i].addEventListener("mouseover", function() {
             if (ismovable(this)) {
                 this.className = "puzzlepiece movablepiece";
             }
         });
 
+        puzzle[i].addEventListener("mouseleave", function() {
+                  this.className = "puzzlepiece";
+              });
 
-      puzzle_pieces[i].addEventListener("click", function() {
+      puzzle[i].addEventListener("click", function() {
             if (this.className.includes("movablepiece")) {
-                swap(this, true, winning_state, puzzle_pieces);
+                swap(this, true, winning_state, puzzle);
             }
         });
       }
@@ -71,4 +79,16 @@ function swap(piece, animate) {
         piece.style.left = blank[1];
     }
     blank = [btop,bleft];
+}
+
+function shuffle(pieces) {
+    var Length = pieces.length;
+    var piece;
+    var rand;
+
+    for (var i = 0; i < Length; i++) {
+        rand = Math.floor(Math.random() * pieces.length);
+        piece = pieces.splice(rand, 1);
+        swap(piece[0], false);
+    }
 }
