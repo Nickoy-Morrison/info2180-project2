@@ -1,13 +1,23 @@
 //Global Vaiable declarations
 var blank = ["300px", "300px"]; //coordinates for blank position
-
+var begin = false; //indicates game start
 
 
 window.onload = function(){
   var winning_state = start(), puzzle = getpieces();
+add_background_seletor();
+
+var bg_form_items = $("form")[0].elements;
+bg_form_items.addEventListener("click", function(){
+            next();
+        });
+
+
+
 
 document.getElementById("shufflebutton").onclick = function() {
   shuffle(puzzle);
+  begin = true;
 }
 
   for (var i = 0; i < puzzle.length; i++) {
@@ -64,6 +74,17 @@ function ismovable(piece) {
     return parseInt(piece.style.top) + 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) - 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) - 100 === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) + 100 === parseInt(blank[1])
 }
 
+function winning(winning_state, pieces) {
+  if (start) {
+      for (var i = 0; i < pieces.length; i++) {
+          if ((winning_state[i][0] !== pieces[i].style.top) | (winning_state[i][1] !== pieces[i].style.left)) {
+              return false;
+          }
+      }
+      return true;
+  }
+  return false;
+}
 
 function swap(piece, animate) {
     btop = piece.style.top;
@@ -90,5 +111,30 @@ function shuffle(pieces) {
         rand = Math.floor(Math.random() * pieces.length);
         piece = pieces.splice(rand, 1);
         swap(piece[0], false);
+    }
+}
+
+function add_background_seletor() {
+    var background_form = "<form align='Center'>\
+    <p align='Center'>Select a background image<p>\
+    <input type = 'button'> Next Images\
+    </form>";
+    $("#overall").before(background_form);
+
+}
+
+function next(){
+  var pieces = get_pieces();
+
+  var imgs =["background.jpg", "background1.jpg", "background2.jpg", "background3.jpg"];
+  if(counter == 3){
+    counter = 0;
+  }
+  else{
+    counter++;
+  }
+
+  for (var i = 0; i < pieces.length; i++){
+        pieces[i].style.backgroundImage = imgs[counter];
     }
 }
