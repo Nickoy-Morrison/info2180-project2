@@ -1,26 +1,32 @@
+/*Additional features:
+- Animations and/or transitions
+- Multiple backgrounds (Grade)
+*/
+
+
 //Global Vaiable declarations
 var blank = ["300px", "300px"]; //coordinates for blank position
-var begin = false; //indicates game start
-
 
 window.onload = function(){
-  var winning_state = start(), puzzle = getpieces();
-add_background_seletor();
+    var state = start();
+    var puzzle = getpieces();
+    seletor();
+    var items = $("form")[0].elements;
 
-var bg_form_items = $("form")[0].elements;
-bg_form_items.addEventListener("click", function(){
-            next();
+    for (var i = 0; i < items.length; i++) {
+        items[i].addEventListener("click", function(){
+            make_change(this.value)
         });
+    }
 
+    document.getElementById("shufflebutton").onclick = function() {
+        shuffle(puzzle);
+        image_shuffle();
+        puzzle = getpieces();
 
+    }
 
-
-document.getElementById("shufflebutton").onclick = function() {
-  shuffle(puzzle);
-  begin = true;
-}
-
-  for (var i = 0; i < puzzle.length; i++) {
+    for (var i = 0; i < puzzle.length; i++) {
         puzzle[i].addEventListener("mouseover", function() {
             if (ismovable(this)) {
                 this.className = "puzzlepiece movablepiece";
@@ -28,22 +34,20 @@ document.getElementById("shufflebutton").onclick = function() {
         });
 
         puzzle[i].addEventListener("mouseleave", function() {
-                  this.className = "puzzlepiece";
-              });
+            this.className = "puzzlepiece";
+        });
 
-      puzzle[i].addEventListener("click", function() {
+        puzzle[i].addEventListener("click", function() {
             if (this.className.includes("movablepiece")) {
-                swap(this, true, winning_state, puzzle);
+                swap(this, true, state, puzzle);
+                moves++;
             }
         });
-      }
+    }
 }
 
-function getpieces() {
-    return $(".puzzlepiece");
-}
-
-function start() {
+//Checks if the puzzle piece is movable
+function start(){
     var puzzleArea = document.getElementById("puzzlearea").childNodes;
     var instate = [];
     var x = 0,y = 0,t = 0,l = 0,counter = 1;
@@ -69,23 +73,13 @@ function start() {
     return instate
 }
 
-
+//Checks if the puzzle piece is movable
 function ismovable(piece) {
     return parseInt(piece.style.top) + 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) - 100 === parseInt(blank[0]) & parseInt(piece.style.left) === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) - 100 === parseInt(blank[1]) | parseInt(piece.style.top) === parseInt(blank[0]) & parseInt(piece.style.left) + 100 === parseInt(blank[1])
 }
 
-function winning(winning_state, pieces) {
-  if (start) {
-      for (var i = 0; i < pieces.length; i++) {
-          if ((winning_state[i][0] !== pieces[i].style.top) | (winning_state[i][1] !== pieces[i].style.left)) {
-              return false;
-          }
-      }
-      return true;
-  }
-  return false;
-}
 
+//switches piece with blank space
 function swap(piece, animate) {
     btop = piece.style.top;
     bleft = piece.style.left;
@@ -99,42 +93,60 @@ function swap(piece, animate) {
         piece.style.top = blank[0];
         piece.style.left = blank[1];
     }
-    blank = [btop,bleft];
+    blank = [btop, bleft];
 }
 
+//shuffle the maze pieces
 function shuffle(pieces) {
-    var Length = pieces.length;
+    var pLength = pieces.length;
     var piece;
     var rand;
 
-    for (var i = 0; i < Length; i++) {
+    for (var index = 0; index < pLength; index++) {
         rand = Math.floor(Math.random() * pieces.length);
         piece = pieces.splice(rand, 1);
         swap(piece[0], false);
     }
 }
 
-function add_background_seletor() {
-    var background_form = "<form align='Center'>\
-    <p align='Center'>Select a background image<p>\
-    <input type = 'button'> Next Images\
+//Returns all maze pieces
+function getpieces() {
+    return $(".puzzlepiece");
+}
+
+//give the option to select a image
+function seletor() {
+    var form = "<form align='left'>\
+    <p align='left'>Select a background image<p>\
+    <div class='custom-select' style='width:200px'>\
+      <select>\
+        <option value=''>Erza (Fairy Tail)</option>\
+        <option value='1'>tokyo ghoul: re</option>\
+        <option value='2'>Black Clover</option>\
+        <option value='3'>Attack on Titan </option>\
+        <option value='4'>Violet Evergarden</option>\
+      </select>\
+    </div>\
     </form>";
-    $("#overall").before(background_form);
+
+    $("#overall").before(form);
 
 }
 
-function next(){
-  var pieces = get_pieces();
+//accept the image to be change
+function make_change(value) {
+    var p = getpieces();
 
-  var imgs =["background.jpg", "background1.jpg", "background2.jpg", "background3.jpg"];
-  if(counter == 3){
-    counter = 0;
-  }
-  else{
-    counter++;
-  }
-
-  for (var i = 0; i < pieces.length; i++){
-        pieces[i].style.backgroundImage = imgs[counter];
+    for (var i = 0; i < p.length; i++){
+        p[i].style.backgroundImage = `url('background${value}.jpg')`;
     }
+}
+
+//shuffle the image that was selected
+function image_shuffle(){
+    var value = Math.floor(Math.random()*4)
+    if(value === 0){
+        value = "";
+    }
+    make_change(value);
 }
